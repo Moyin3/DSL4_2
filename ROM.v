@@ -21,9 +21,8 @@
 
 
 module ROM(
-    input CLK,
     input [7:0] ADDR,
-    output reg [7:0] DATA
+    output [7:0] DATA
     );
     
     parameter RAMAddrWidth = 8;
@@ -33,6 +32,5 @@ module ROM(
     initial
         $readmemh("Complete_Demo_ROM.txt", rom_mem);
         
-    always @(posedge CLK)
-        DATA <= rom_mem[ADDR];
+    assign DATA = rom_mem[ADDR];
 endmodule

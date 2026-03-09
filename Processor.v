@@ -29,6 +29,8 @@ reg CurrBusWE, NextBusWE;
 
 reg [1:0] CurrInterruptAck, NextInterruptAck;
 
+reg [3:0] CurrOpcode, NextOpcode;
+
 // ============================
 // Tristate bus
 // ============================
@@ -39,9 +41,8 @@ assign BUS_INTERRUPTS_ACK = CurrInterruptAck;
 assign ROM_ADDRESS = CurrPC;
 
 wire [7:0] BusDataIn = BUS_DATA;
-wire [7:0] Instruction = ROM_DATA;
-wire [3:0] Opcode = Instruction[3:0];
-wire [3:0] AluOp  = Instruction[7:4];
+wire [3:0] Opcode = CurrOpcode;       // registered in DECODE from instruction byte
+wire [3:0] AluOp  = ROM_DATA[7:4];   // combinatorial: correct during DECODE when ALU latches
 
 // ============================
 // ALU
@@ -80,6 +81,7 @@ always @(posedge CLK) begin
         CurrBusOut <= 8'h00;
         CurrBusWE <= 1'b0;
         CurrInterruptAck <= 2'b00;
+        CurrOpcode <= 4'h0;
     end else begin
         CurrState <= NextState;
         CurrPC <= NextPC;
@@ -90,6 +92,7 @@ always @(posedge CLK) begin
         CurrBusOut <= NextBusOut;
         CurrBusWE <= NextBusWE;
         CurrInterruptAck <= NextInterruptAck;
+        CurrOpcode <= NextOpcode;
     end
 end
 
@@ -110,6 +113,7 @@ always @* begin
     NextBusWE   = 1'b0;
 
     NextInterruptAck = 2'b00;
+    NextOpcode = CurrOpcode;
 
     case (CurrState)
 
@@ -133,6 +137,7 @@ always @* begin
     
     DECODE:
     begin
+        NextOpcode = ROM_DATA[3:0]; // latch instruction opcode before PC advances
         NextPC = CurrPC + 8'h01;
         NextState = EXECUTE;
     end

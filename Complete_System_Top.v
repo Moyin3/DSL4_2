@@ -67,7 +67,6 @@ RAM ram (
 
 
 ROM rom (
-    .CLK(CLK),
     .ADDR(ROM_ADDR),
     .DATA(ROM_DATA)
 );

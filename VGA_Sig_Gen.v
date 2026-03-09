@@ -48,6 +48,6 @@ module VGA_Sig_Gen(
         VGA_VS     = vs;
     end
     
-    assign VGA_COLOUR = visible ? BG : 8'hFF;
+    assign VGA_COLOUR = visible ? (VGA_DATA ? FG : BG) : 8'hFF;
 
 endmodule
